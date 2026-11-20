@@ -29,18 +29,18 @@ React + Vite Frontend
 
 ## Module responsibilities
 
-| Module | Owns | Must not |
-|---|---|---|
-| auth / users | Registration, login, password hashing, JWT, refresh rotation and revocation | Log tokens or secrets |
-| campaigns | Campaign CRUD, status, search | Know about any platform |
-| posts | Drafts, versions, target destinations, editorial state | Contain publishing logic |
-| social-accounts | Connected accounts, adapter binding, connection status | Store real credentials in plaintext |
-| publishing | Validation, adapter dispatch, deliveries, attempts, idempotency | Live in controllers or React |
-| scheduling | Schedules, enqueueing, due-job handling, recovery | Hold business state only in Redis |
-| webhooks | HMAC verification, replay protection, dedup | Trust a request because of its URL |
-| ai-content | Provider interface, prompts, schema validation, sessions | Depend on publishing or frontend; publish anything |
-| analytics | Outcome and retry statistics, audit events | Invent engagement metrics |
-| common | Config validation, logging, errors | |
+| Module          | Owns                                                                        | Must not                                           |
+| --------------- | --------------------------------------------------------------------------- | -------------------------------------------------- |
+| auth / users    | Registration, login, password hashing, JWT, refresh rotation and revocation | Log tokens or secrets                              |
+| campaigns       | Campaign CRUD, status, search                                               | Know about any platform                            |
+| posts           | Drafts, versions, target destinations, editorial state                      | Contain publishing logic                           |
+| social-accounts | Connected accounts, adapter binding, connection status                      | Store real credentials in plaintext                |
+| publishing      | Validation, adapter dispatch, deliveries, attempts, idempotency             | Live in controllers or React                       |
+| scheduling      | Schedules, enqueueing, due-job handling, recovery                           | Hold business state only in Redis                  |
+| webhooks        | HMAC verification, replay protection, dedup                                 | Trust a request because of its URL                 |
+| ai-content      | Provider interface, prompts, schema validation, sessions                    | Depend on publishing or frontend; publish anything |
+| analytics       | Outcome and retry statistics, audit events                                  | Invent engagement metrics                          |
+| common          | Config validation, logging, errors                                          |                                                    |
 
 ## Publication lifecycle (proposed)
 
@@ -49,14 +49,16 @@ A **Post** is content. A **Delivery** is that content going to one destination (
 Delivery states:
 
 `PENDING` -> `SCHEDULED` -> `IN_PROGRESS` -> `PUBLISHED`
- 
+
 Failure branches from `IN_PROGRESS`:
+
 - `RETRY_WAITING` (transient error or 429; honors `Retry-After`; bounded exponential backoff with jitter), then back to `IN_PROGRESS`.
 - `FAILED` (permanent error, invalid content, auth failure, or retries exhausted).
 - `RECONCILIATION_REQUIRED` (ambiguous outcome such as a timeout after send; never blindly republished).
 - `CANCELLED` (user action).
 
 Rules:
+
 - Every state change is persisted in PostgreSQL in a transaction; BullMQ jobs carry only an identifier.
 - Jobs may be delivered more than once. The worker must re-read the delivery, check its state and a version/lease, and no-op if it is stale or already terminal.
 - One delivery's failure never alters another delivery's state.
@@ -95,10 +97,10 @@ All timestamps stored in UTC. The frontend converts to and from the user's local
 
 ## Risks and open decisions
 
-| Item | Notes |
-|---|---|
-| Rich-text editor | Must be evaluated for RTL, mixed text, selection/inline suggestions, accessibility, licensing. Decide in Phase 9 prep. |
-| Real AI provider | Do not assume a Claude.ai subscription includes API access. Verify access and pricing first. |
-| Scheduling source of truth | Proposed: due time in PostgreSQL, BullMQ delayed job as the trigger, plus a periodic sweep to recover missed jobs. |
-| Version storage | Full-text snapshots per version (simple) vs diffs. Proposed: snapshots. |
-| Telegram limits | Document and test limits when the adapter is built; do not hardcode from memory. |
+| Item                       | Notes                                                                                                                  |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Rich-text editor           | Must be evaluated for RTL, mixed text, selection/inline suggestions, accessibility, licensing. Decide in Phase 9 prep. |
+| Real AI provider           | Do not assume a Claude.ai subscription includes API access. Verify access and pricing first.                           |
+| Scheduling source of truth | Proposed: due time in PostgreSQL, BullMQ delayed job as the trigger, plus a periodic sweep to recover missed jobs.     |
+| Version storage            | Full-text snapshots per version (simple) vs diffs. Proposed: snapshots.                                                |
+| Telegram limits            | Document and test limits when the adapter is built; do not hardcode from memory.                                       |

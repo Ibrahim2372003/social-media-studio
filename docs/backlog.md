@@ -2,17 +2,17 @@
 
 Ordered by the roadmap in [master-plan.md](master-plan.md). Work one small slice at a time; run checks before moving on.
 
-## Next: Phase 1, Foundation
+## Phase 1, Foundation (implemented, in review)
 
 1. npm workspaces root with shared TypeScript config, ESLint and Prettier.
 2. `apps/api`: NestJS skeleton with `/health`, validated env config, Pino logging, Swagger.
 3. `docker-compose.yml` for PostgreSQL and Redis, plus `.env.example`.
 4. `apps/web`: Vite + React + TypeScript + Tailwind + TanStack Query skeleton.
-5. `apps/worker`: only when the first job type exists (Phase 6) unless needed sooner.
+5. `apps/worker`: deferred until the first job type exists (Phase 6).
 6. GitHub Actions: install, lint, typecheck, test.
-7. README setup instructions verified by actually running them.
+7. README setup instructions. Docker Compose startup could not be verified in the authoring sandbox (no Docker daemon); verify locally.
 
-## Phase 2: Database and auth
+## Next: Phase 2, Database and auth
 
 - Prisma init, User and RefreshToken models, first migration.
 - Register, login, refresh (rotation with reuse detection), logout.
