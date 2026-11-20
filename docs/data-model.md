@@ -4,21 +4,21 @@ Status: **proposed (Phase 0)**. Conceptual only. The Prisma schema will be writt
 
 ## Entities
 
-| Entity | Phase | Purpose |
-|---|---|---|
-| User | 2 | Account, password hash |
-| RefreshToken | 2 | Hashed token, family id, expiry, revoked/rotated-at |
-| Campaign | 3 | Name, description, goal, status; owned by User |
-| Post | 3 | Content container; belongs to Campaign; owner; current version pointer; editorial status |
-| PostVersion | 3 | Immutable text snapshot; source (`USER`, `AI_ACCEPTED`, `RESTORED`); parent version |
-| SocialAccount | 4-5 | Platform type, display name, connection status, encrypted credentials (real platforms only) |
-| Delivery | 5 | Post version -> SocialAccount; state; scheduled time; remote id; version/lease field |
-| PublishAttempt | 5 | One per try: started/finished, outcome class, HTTP status, error summary, next retry time |
-| IdempotencyRecord | 5 | User, key, request hash, response reference, expiry |
-| WebhookEvent | 4-5 | Event id, signature status, received time, processed flag; unique on event id |
-| AIWritingSession | 8 | Owner, post, operation history with retention limit |
-| AISuggestion | 8 | Provider output tied to a session and a base version; status `PENDING/ACCEPTED/REJECTED` |
-| AuditEvent | 10 (if justified) | Important user actions |
+| Entity            | Phase             | Purpose                                                                                     |
+| ----------------- | ----------------- | ------------------------------------------------------------------------------------------- |
+| User              | 2                 | Account, password hash                                                                      |
+| RefreshToken      | 2                 | Hashed token, family id, expiry, revoked/rotated-at                                         |
+| Campaign          | 3                 | Name, description, goal, status; owned by User                                              |
+| Post              | 3                 | Content container; belongs to Campaign; owner; current version pointer; editorial status    |
+| PostVersion       | 3                 | Immutable text snapshot; source (`USER`, `AI_ACCEPTED`, `RESTORED`); parent version         |
+| SocialAccount     | 4-5               | Platform type, display name, connection status, encrypted credentials (real platforms only) |
+| Delivery          | 5                 | Post version -> SocialAccount; state; scheduled time; remote id; version/lease field        |
+| PublishAttempt    | 5                 | One per try: started/finished, outcome class, HTTP status, error summary, next retry time   |
+| IdempotencyRecord | 5                 | User, key, request hash, response reference, expiry                                         |
+| WebhookEvent      | 4-5               | Event id, signature status, received time, processed flag; unique on event id               |
+| AIWritingSession  | 8                 | Owner, post, operation history with retention limit                                         |
+| AISuggestion      | 8                 | Provider output tied to a session and a base version; status `PENDING/ACCEPTED/REJECTED`    |
+| AuditEvent        | 10 (if justified) | Important user actions                                                                      |
 
 ## Key relationships
 
